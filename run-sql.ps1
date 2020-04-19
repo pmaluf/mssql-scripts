@@ -1,9 +1,9 @@
  <# 
 .SYNOPSIS 
-Script in PowerShell to execute all the SQL files inside a folder and output then to a CSV or TXT format.
+Runs all sql script in a folder and output then to a file in csv or table format.
 
 .DESCRIPTION 
-All files in -Sqldir folder with .sql extension will be run and output then into a CSV or TXT file format.
+All files  ending with .sql will be run against localhost sqlserver or the sqlserver given in parameter $SQLServer.
 
 .PARAMETER SqlDir 
 The full path to the directory where all the sql script files are.
@@ -164,9 +164,10 @@ function main(){
     }
     if ($SQLAuthentication){
         $Username = Read-Host "Please enter your username"
-        $Password = Read-Host -assecurestring "Please enter your password"
+        $Password = Read-Host -assecurestring -AsPlainText -Force "Please enter your password"
+        $cred = new-object -typeName System.Management.Automation.PSCredential -ArgumentList $Username, $Password
         $SqlParams.Add('Username', $Username)
-        $SqlParams.Add('Password', $Password) 
+        $SqlParams.Add('Password', $cred.GetNetworkCredential().Password) 
                
     }
     
@@ -182,4 +183,4 @@ function main(){
 }
 
 # MAIN
-main
+main 
